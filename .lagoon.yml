@@ -1,0 +1,9 @@
+docker-compose-yaml: docker-compose.yml
+
+environments:
+  prod:
+    routes:
+      - anythingllm:
+#        - anythingllm-sample.amazee.io:
+#            tls-acme: false
+#            insecure: Redirect

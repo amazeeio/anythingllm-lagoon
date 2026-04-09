@@ -1,0 +1,40 @@
+services:
+  anythingllm:
+    platform: linux/amd64
+    image: ghcr.io/amazeeio/anythingllm-lagoon-base:latest
+    user: "10000"
+    ports:
+      - "3000:3000"
+    #env_file:
+    #  - .env
+    environment:
+      STORAGE_DIR: /app/server/storage
+      SERVER_PORT: "3000"
+      DISABLE_TELEMETRY: "true"
+      # Mapping new naming scheme to AnythingLLM internal names
+      LLM_PROVIDER: ${LLM_PROVIDER:-litellm}
+      LLM_AI_KEY: ${LLM_AI_KEY:-}
+      LLM_URL: ${LLM_URL:-}
+      LITE_LLM_MODEL_PREF: ${LITE_LLM_MODEL_PREF:-}
+      LITE_LLM_MODEL_TOKEN_LIMIT: ${LITE_LLM_MODEL_TOKEN_LIMIT:-}
+
+      EMBEDDING_ENGINE: ${EMBEDDING_ENGINE:-litellm}
+      EMBEDDING_MODEL_PREF: ${EMBEDDING_MODEL_PREF:-}
+      EMBEDDING_MODEL_MAX_CHUNK_LENGTH: ${EMBEDDING_MODEL_MAX_CHUNK_LENGTH:-}
+
+      JWT_SECRET: ${JWT_SECRET:-}
+      # Database variables
+      DB_HOST: ${DB_HOST:-}
+      DB_USER: ${DB_USER:-}
+      DB_PASS: ${DB_PASS:-}
+      DB_NAME: ${DB_NAME:-}
+      DB_PORT: ${DB_PORT:-5432}
+    volumes:
+      - anythingllm_storage:/app/server/storage
+    labels:
+      lagoon.type: basic-persistent
+      lagoon.persistent: /app/server/storage
+      lagoon.persistent.size: 5Gi
+
+volumes:
+  anythingllm_storage:
