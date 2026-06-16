@@ -39,10 +39,48 @@ Before deploying, configure these variables in your Lagoon project:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `JWT_SECRET` | Secret used for AnythingLLM authentication | `replace-with-long-random-value` |
+| `JWT_SECRET` | Secret used for AnythingLLM session signing and authentication | `replace-with-long-random-value` |
+| `AUTH_TOKEN` | Auth token used to secure the AnythingLLM instance (enforces authentication) | `replace-with-long-random-value` |
 | `LLM_URL` | Base URL for your Generic OpenAI-compatible provider | `https://llm.us103.amazee.ai` |
 | `LLM_AI_KEY` | API key for the configured provider | `your-api-key-here` |
 | `EMBEDDING_PROVIDER` | Embedding backend | `native` |
+
+#### Generating and Rotating Secrets
+
+To secure your AnythingLLM instance in production, you must generate unique, secure values for `JWT_SECRET` and `AUTH_TOKEN`. 
+
+##### 1. Generating tokens using OpenSSL
+You can generate secure, cryptographically random strings for these variables using OpenSSL in your terminal:
+
+```bash
+# Generate a secure 32-byte hex string (64 characters) for JWT_SECRET
+openssl rand -hex 32
+
+# Generate a secure 16-byte hex string (32 characters) for AUTH_TOKEN
+openssl rand -hex 16
+```
+
+##### 2. Configuring the variables
+- **Lagoon**: Add these variables to your Lagoon project's environment variables (via the Lagoon dashboard, CLI, or API) as `JWT_SECRET` and `AUTH_TOKEN`.
+- **Local Development**: Add them to your `.env` or `.env.defaults` file in the project root:
+  ```env
+  JWT_SECRET=your_generated_jwt_secret
+  AUTH_TOKEN=your_generated_auth_token
+  ```
+
+##### 3. Re-rolling / Rotating Keys
+If you need to re-roll these keys because they were compromised, leaked, or are missing:
+
+1. **Re-generate** new secure strings using the OpenSSL commands above.
+2. **Update** the environment variables in your Lagoon project configuration or `.env` file.
+3. **Restart the container/service** for the new configuration to take effect.
+   - For Lagoon: Trigger a redeployment of your environment.
+   - For local development: Run `docker compose down && docker compose up -d`.
+
+> [!WARNING]
+> **Implications of rotation:**
+> - **Rotating `JWT_SECRET`** will immediately invalidate all existing user sessions. Any active users (including yourself) will be logged out and must sign in again.
+> - **Rotating `AUTH_TOKEN`** changes the direct password/token needed to authenticate with your AnythingLLM instance. Ensure any external clients or users utilizing the token are updated.
 
 Optional database variables when using external Postgres:
 
