@@ -1,7 +1,7 @@
 services:
   anythingllm:
     platform: linux/amd64
-    image: ghcr.io/amazeeio/anythingllm-lagoon-base:v1.19.0
+    image: ghcr.io/amazeeio/anythingllm-lagoon-base:v1.20.0
     user: "10000"
     ports:
       - "3000:3000"
